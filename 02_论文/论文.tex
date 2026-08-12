@@ -1,0 +1,551 @@
+% !TeX program = latexmk
+% !TeX options = -xelatex -synctex=1 -interaction=nonstopmode -file-line-error -outdir=build "%DOC%"
+% =============================================================================
+% 数学建模竞赛论文通用 LaTeX 模板（完整版）
+% -----------------------------------------------------------------------------
+% 适用：高教社杯国赛 / 华数杯 / MathorCup / 电工杯 / 深圳杯 / 亚太赛 等
+% 编译：xelatex（推荐）或 latexmk -xelatex
+% 字库：fontset=fandol（CTeX 自带，无需额外字体文件）
+% -----------------------------------------------------------------------------
+% 使用说明：
+%   1. 全局搜索 【替换】 字样，按提示替换为你的内容
+%   2. 摘要采用"六段法"：背景+总方法 / Q1 / Q2 / Q3 / Q4 / 总结，每段必须含具体数值结果
+%   3. 图题在下、表题在上；表格一律三线表（无竖线）
+%   4. 2026 国赛新规：AI 使用声明置于参考文献之前
+%   5. 六大题型（优化/预测/评价/分类/统计/机理）通用，配套规范见 ../01_通用写作规范/00_总索引.md
+% =============================================================================
+
+\documentclass[12pt,a4paper,fontset=fandol]{ctexart}
+
+% ============================ 1. 宏包加载 ====================================
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\usepackage{amsmath, amssymb}        % 数学公式与符号
+\usepackage{amsthm}                  % 定理环境（可选）
+\usepackage{booktabs}                % 严格三线表
+\usepackage{multirow}                % 跨行表格
+\usepackage{array}                   % 表格列格式扩展
+\usepackage{makecell}                % 单元格内换行
+\usepackage{graphicx}                % 插入图片
+\usepackage{float}                   % 强制图表位置 [H]
+\usepackage{fancyhdr}                % 自定义页眉页脚
+\usepackage{indentfirst}             % 每段首行缩进
+\usepackage{caption}                 % 图表标题排版
+\usepackage{subcaption}              % 子图排版
+\usepackage{longtable}               % 附录长表格跨页
+\usepackage{listings}                % 代码高亮
+\usepackage{xcolor}                  % 颜色支持
+\usepackage{enumitem}                % 列表间距控制
+\usepackage{hyperref}                % 超链接与目录（最后加载）
+\usepackage{cleveref}                % 智能交叉引用 \cref
+
+% TikZ 流程图（按需启用，编译较慢可注释掉）
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds}
+
+% ============================ 2. 字体设置 ====================================
+\usepackage{newtxtext}               % 正文英文 Times 风格
+\usepackage{newtxmath}               % 数学公式 Times 风格
+% 中文：ctexart 默认宋体；如需修改：
+% \setCJKmainfont{SimSun}[BoldFont=SimHei, ItalicFont=KaiTi]
+
+% ============================ 3. 超链接设置 ==================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,                 % 目录/公式引用
+    citecolor=black,                 % 文献引用
+    urlcolor=blue,                   % URL
+    bookmarksopen=true,
+    pdftitle={【替换】论文标题},
+    pdfauthor={【替换】参赛队}
+}
+
+% ============================ 4. 代码块设置 ==================================
+\lstset{
+    language=Python,                 % 按需改为 MATLAB / R / Julia
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red!70!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,                 % 自动换行防溢出
+    tabsize=4,
+    showstringspaces=false,
+    literate={_}{{\_}}1,             % 【核心修复】：下划线报错
+    captionpos=b                     % 代码标题在下方
+}
+
+% ============================ 5. 章节标题格式 ================================
+\ctexset{
+    section/name={,},
+    section/number=\chinese{section}、,           % 一、二、三、
+    section/format=\large\bfseries\centering,      % 一级居中加粗
+    subsection/number=\arabic{subsection},         % 1 2 3
+    subsection/format=\bfseries,                   % 二级加粗
+    subsubsection/number=\arabic{subsection}.\arabic{subsubsection},
+    subsubsection/format=\itshape                  % 三级斜体
+}
+
+% ============================ 6. 正文排版间距 ================================
+\renewcommand{\baselinestretch}{1.5}   % 1.5 倍行距
+\setlength{\parskip}{0.5em}            % 段间距
+\setlength{\parindent}{2em}            % 首行缩进 2 字符
+
+% 图表标题居中
+\captionsetup{justification=centering}
+\captionsetup[table]{position=above}   % 表题在上
+\captionsetup[figure]{position=below}  % 图题在下
+
+% 列表紧凑化
+\setlist{nosep, leftmargin=2em}
+
+% ============================ 7. 页眉页脚 ====================================
+\pagestyle{fancy}
+\fancyhf{}                              % 清空默认
+\fancyfoot[C]{\thepage}                 % 页脚居中显示页码
+\renewcommand{\headrulewidth}{0pt}      % 不画页眉横线
+
+% ============================ 8. 自定义命令 ==================================
+% 摘要页命令：\abstractpage{标题}{摘要正文}
+\newcommand{\abstractpage}[2]{%
+    \thispagestyle{plain}%
+    \pagenumbering{arabic}%
+    \setcounter{page}{1}%
+    \begin{center}
+        {\bfseries\zihao{3} #1}%
+    \end{center}
+    \vspace{0.5em}
+    \begin{center}
+        {\bfseries\zihao{4} 摘\quad 要}%
+    \end{center}
+    \vspace{0.5em}
+    #2%
+    \vspace{1em}
+    \par\noindent\textbf{关键词}：【替换】关键词1；关键词2；关键词3；关键词4；关键词5
+    \newpage
+}
+
+% 结果数字加粗便捷命令
+\newcommand{\res}[1]{\textbf{#1}}
+
+% ============================ 9. 定理环境（可选）=============================
+\newtheorem{definition}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+
+% =============================================================================
+\begin{document}
+
+% ============================ 摘要页（六段法）=================================
+% 六段式结构：第1段背景+总方法 / 第2段Q1 / 第3段Q2 / 第4段Q3 / 第5段Q4 / 第6段总结
+% 硬性要求：①每段开头"针对..."领起 ②第2-5段每段至少一个加粗数字结果 ③方法名必须出现
+% 总字数控制 600-900 字，不超过一页。详见 ../01_通用写作规范/摘要六段法通用规范.md
+\abstractpage{基于【替换核心方法】与【替换辅助方法】的【替换研究对象】【替换问题类型】模型}%
+{%
+% ---- 第 1 段：背景 + 总方法 ----
+\textbf{针对【替换研究背景】中【替换核心难点 1】、【替换核心难点 2】等问题，本文建立了以【替换核心模型】为核心、融合【替换辅助方法 1】与【替换辅助方法 2】的【替换框架类型】框架。}
+
+% ---- 第 2 段：问题一（基础模型）----
+\textbf{针对问题一}，【替换简述方法】，构建了以【替换目标】为目标的【替换模型类型】模型，包含【替换约束 1】、【替换约束 2】和【替换约束 3】三类约束。调用【替换求解器】求解得到【替换时间范围】最优【替换指标】为\res{【替换具体数字】}。
+
+% ---- 第 3 段：问题二（引入新约束）----
+\textbf{针对问题二}，【替换新增约束】，修正了【替换关键方程】。重新求解后，得到【替换指标】为\res{【替换具体数字】}，较问题一\res{【替换上升/下降】}\res{【替换百分比】}\%。
+
+% ---- 第 4 段：问题三（大规模/扩展）----
+\textbf{针对问题三}，针对【替换规模特征】，设计了\res{【替换双层/分层】}框架：外层【替换方法】搜索【替换决策变量】，内层【替换方法】计算【替换目标】。求得\res{【替换结果】}为\res{【替换具体数字】}。
+
+% ---- 第 5 段：问题四（随机性/鲁棒）----
+\textbf{针对问题四}，引入【替换预测模型】对【替换数据】拟合（$\mu=$【替换均值】，$\sigma=$【替换标准差】），通过【替换 N】次蒙特卡洛模拟验证，\res{【替换指标】}满足【替换约束】。
+
+% ---- 第 6 段：总结（模型特色 + 推广价值）----
+\textbf{本文模型具有【替换普适性/扩展性】，对【替换实际场景】具有指导意义。}
+}
+
+% ============================ 目录（可选，按需启用）=========================
+% \tableofcontents
+% \newpage
+
+% ============================ 一、问题重述 ===================================
+\section{问题重述}
+
+本题要求为【替换研究对象】制定【替换目标】方案。【替换研究对象】具有【替换特征 1】、【替换特征 2】等复杂性。
+
+\textbf{已知条件}包括：
+\begin{enumerate}
+    \item 【替换已知条件 1】；
+    \item 【替换已知条件 2】；
+    \item 【替换已知条件 3】。
+\end{enumerate}
+
+\textbf{核心任务}是在满足【替换约束】的条件下，建立【替换模型类型】，求解使【替换目标】最优的【替换方案】。具体分为【替换 N】个递进问题：
+\begin{itemize}
+    \item \textbf{问题一}：要求【替换基础任务】；
+    \item \textbf{问题二}：引入【替换新约束】；
+    \item \textbf{问题三}：扩展至【替换更大规模】；
+    \item \textbf{问题四}：引入【替换随机性】。
+\end{itemize}
+
+% ============================ 二、问题分析 ===================================
+\section{问题分析}
+
+\subsection{问题一分析}
+
+\textbf{问题特征}：【替换 2~3 句难点描述，如"多级 BOM 耦合""非线性瓶颈""随机需求"】。
+
+\textbf{模型选择依据}：鉴于本问题的【替换线性/非线性】特征，且目标函数【替换性质】，本文采用【替换方法】作为求解方法。【替换方法】可精确描述【替换决策变量含义】，这是【替换其他方法】无法实现的\cite{1}。
+
+\subsection{问题二分析}
+
+\textbf{问题特征}：【替换新增约束的难点】。
+
+\textbf{模型选择依据}：考虑到本问题【替换场景特征】，本文采用\textbf{【替换方法】}。相比【替换对比方法】，【替换所选方法】具有【替换优势 1】、【替换优势 2】、【替换优势 3】三大优势。
+
+\subsection{问题三分析}
+
+\textbf{问题特征}：【替换规模扩展与新增复杂度的描述】。
+
+\textbf{模型选择依据}：针对本问题大规模维度与【替换搜索空间】的双重复杂性，若采用单一【替换方法】求解，【替换困难】。因此本文采用降维分解策略，设计了\textbf{【替换双层/分层】框架}：外层【替换方法】在【替换决策空间】进行全局搜索\cite{2}，内层【替换方法】计算【替换目标】。
+
+\subsection{问题四分析}
+
+\textbf{问题特征}：【替换随机性描述，如"需求服从正态分布""概率交付率约束"】。
+
+\textbf{模型选择依据}：针对本问题的随机性特征，本文采用"【替换预测】+\textbf{【替换量化】}+【替换验证】"的三步法。
+
+\subsection{研究技术路线}
+
+本文的研究技术路线如下：首先【替换步骤 1】；其次【替换步骤 2】；再次【替换步骤 3】；最后【替换步骤 4】。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/fig1_framework.png}
+    \caption{研究技术路线流程图}
+    \label{fig:framework}
+    \begin{center}
+        \footnotesize 【替换】本图展示了论文的整体研究思路：从问题重述与特征分析出发，针对四个递进问题分别采用不同的建模方法，最终通过灵敏度分析和模型验证确保结果稳健性。
+    \end{center}
+\end{figure}
+
+% ============================ 三、模型假设 ===================================
+\section{模型假设}
+
+为了简化模型并聚焦于核心问题，我们做出以下合理假设：
+\begin{enumerate}
+    \item 假设【替换假设 1，如"生产准备费用按批次计费，与生产数量无关"】；
+    \item 假设【替换假设 2，如"子组件生产不占用瓶颈设备工时"】；
+    \item 假设【替换假设 3，如"检修日当天完全停工"】；
+    \item 假设【替换假设 4，如"未来需求服从正态分布"】；
+    \item 假设【替换假设 5，如"物料消耗系数在整个周期内保持不变"】。
+\end{enumerate}
+
+% ============================ 四、符号说明 ===================================
+\section{符号说明}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \caption{主要符号及其含义}
+    \label{tab:symbols}
+    \begin{tabular}{cll}
+        \toprule
+        符号 & 意义说明 & 单位 \\
+        \midrule
+        $i$ & 【替换】组件项目编号 & — \\
+        $t$ & 【替换】天数或周数索引 & 天/周 \\
+        $D_{i,t}$ & 第 $t$ 天组件 $i$ 的外部需求 & 件 \\
+        $x_{i,t}$ & 决策变量，第 $t$ 天组件 $i$ 的生产数量 & 件 \\
+        $y_{i,t}$ & 0-1 变量，第 $t$ 天是否生产组件 $i$ & — \\
+        $z_{i,t}$ & 决策变量，第 $t$ 天结束时组件 $i$ 的库存数量 & 件 \\
+        $S_i$ & 组件 $i$ 的单次生产准备费用 & 元/次 \\
+        $H_i$ & 组件 $i$ 的单件每日库存持有费用 & 元/(件·天) \\
+        $C_t$ & 第 $t$ 天的瓶颈设备总工时上限 & 工时 \\
+        $M$ & 充分大正数（用于大 M 法） & — \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+% ============================ 五、模型的建立与求解 ===========================
+\section{模型的建立与求解}
+
+\subsection{问题一：基础模型}
+
+\subsubsection{目标函数}
+
+以【替换时间范围】内总成本最小为目标，总成本由【替换分量 1】和【替换分量 2】构成：
+\begin{equation}
+    \min F = \sum_{i \in N} \sum_{t=1}^{T} \left( H_i \cdot z_{i,t} + S_i \cdot y_{i,t} \right)
+    \label{eq:obj1}
+\end{equation}
+其中第一项为【替换含义 1】，第二项为【替换含义 2】。
+
+\subsubsection{约束条件}
+
+\textbf{（1）库存平衡约束：}
+\begin{equation}
+    z_{i,t} = z_{i,t-1} + x_{i,t} - D_{i,t} - \sum_{j \in P_i} R_{i,j} \cdot x_{j,t}, \quad \forall i,\; t=1,\ldots,T
+    \label{eq:inv1}
+\end{equation}
+其中 $P_i$ 为【替换集合含义】。该约束表明：【替换文字解释】。
+
+\textbf{（2）产能上限约束：}
+\begin{equation}
+    \sum_{i \in \mathcal{B}} A_i \cdot x_{i,t} \leq C_t, \quad \forall t=1,\ldots,T
+    \label{eq:cap1}
+\end{equation}
+其中 $\mathcal{B}$ 为【替换集合】，【替换说明】。
+
+\textbf{（3）生产状态逻辑约束（大 M 法）：}
+\begin{equation}
+    x_{i,t} \leq M \cdot y_{i,t}, \quad \forall i,\; t=1,\ldots,T
+    \label{eq:logic1}
+\end{equation}
+当 $y_{i,t}=0$ 时强制 $x_{i,t}=0$；当 $y_{i,t}=1$ 时 $x_{i,t}$ 可取任意非负值。
+
+\textbf{（4）初始与终止约束：}
+\begin{equation}
+    z_{i,0} = 0, \quad z_{i,T} = 0, \quad \forall i
+    \label{eq:bound1}
+\end{equation}
+
+\subsubsection{模型求解算法}
+
+采用【替换求解器，如 Gurobi/CBC】求解器直接求解上述混合整数线性规划模型。算法步骤如下：
+\begin{enumerate}
+    \item 【替换步骤 1，如"构建 BOM 消耗矩阵 $R$"】；
+    \item 【替换步骤 2，如"定义决策变量并设置边界"】；
+    \item 【替换步骤 3，如"构建目标函数与约束，封装为优化问题"】；
+    \item 设置求解器参数（最大运行时间【替换】秒，MIPGap 为 $10^{-4}$），启动求解；
+    \item 输出最优【替换方案】表和【替换辅助表】。
+\end{enumerate}
+
+\subsubsection{求解结果}
+
+将题目给定数据代入模型，求解得到最优方案。求解结果显示，问题一的最优【替换指标】为\res{【替换具体数字】}，其中【替换分量 1】=\res{【替换值】}，【替换分量 2】=\res{【替换值】}。
+
+最优生产计划如图\ref{fig:gantt}所示。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/fig2_gantt.png}
+    \caption{【替换】最优生产计划甘特图}
+    \label{fig:gantt}
+    \begin{center}
+        \footnotesize 【替换】本图是问题一模型求得的最优排程可视化结果。横轴为【替换】，纵轴为【替换】，色块表示该日安排生产。
+    \end{center}
+\end{figure}
+
+\subsection{问题二：引入【替换新约束】的模型}
+
+\subsubsection{【替换新约束】的修正}
+
+【替换】问题二要求【替换新约束描述】。库存平衡约束修正为：
+\begin{equation}
+    z_{i,t} = z_{i,t-1} + x_{i,t-1} - D_{i,t} - \sum_{j \in P_i} R_{i,j} \cdot x_{j,t}
+    \label{eq:inv2}
+\end{equation}
+上式中 $x_{i,t-1}$ 项体现了【替换机理说明】。
+
+\subsubsection{求解结果分析}
+
+求解结果显示，引入【替换新约束】后最优【替换指标】为\res{【替换具体数字】}，相比问题一的\res{【替换值】}\res{【替换上升/下降】}\res{【替换百分比】}\%。额外成本主要来自【替换原因 1】和【替换原因 2】。
+
+\subsection{问题三：【替换规模特征】的双层优化}
+
+\subsubsection{双层嵌套框架}
+
+针对本问题【替换规模描述】，设计"外层【替换方法】+内层【替换方法】"的双层嵌套框架：
+\begin{itemize}
+    \item \textbf{外层}：【替换方法】在【替换决策空间】全局搜索；
+    \item \textbf{内层}：将【替换总周期】按【替换切分点】切分为【替换 K】段独立求解；
+    \item \textbf{衔接}：前一段期末库存 = 后一段期初库存。
+\end{itemize}
+
+\subsubsection{求解结果}
+
+求得最优\res{【替换结果描述】}为\res{【替换具体数字】}，总【替换指标】为\res{【替换具体数字】}。
+
+\subsection{问题四：【替换随机性】的处理}
+
+\subsubsection{需求分布拟合}
+
+基于【替换历史数据】，利用【替换预测模型，如 ARIMA】拟合需求的均值 $\mu=$\res{【替换值】}和标准差 $\sigma=$\res{【替换值】}。
+
+\subsubsection{蒙特卡洛模拟验证}
+
+通过\res{【替换 N】}次蒙特卡洛模拟验证，当【替换决策变量】取\res{【替换值】}时，\res{【替换指标 1】}满足【替换约束 1】，\res{【替换指标 2】}满足【替换约束 2】。
+
+% ============================ 六、模型检验与敏感性分析 =======================
+\section{模型检验与敏感性分析}
+
+\subsection{灵敏度分析}
+
+为了进一步验证模型在参数扰动下的稳定性，我们对核心参数【替换 X】进行了灵敏度分析。结果如表\ref{tab:sensitivity}所示。
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \caption{核心参数【替换 X】的灵敏度分析结果}
+    \label{tab:sensitivity}
+    \begin{tabular}{cccc}
+        \toprule
+        参数变化 & 目标函数值 & 变化幅度 & 结论 \\
+        \midrule
+        $-20\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
+        $-10\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
+        $0$     & \res{【替换值】} & — & 基准 \\
+        $+10\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
+        $+20\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+结果显示，当【替换 X】变化 $\pm 20\%$ 时，目标函数仅变化【替换百分比】，说明模型具有\res{【替换极强/较好】}的稳定性。
+
+\subsection{误差分析}
+
+对于【替换预测/拟合】类模型，计算得到拟合优度 $R^2=$\res{【替换值】}，残差平方和 SSE=\res{【替换值】}，均方根误差 RMSE=\res{【替换值】}。
+
+\subsection{稳定性评价}
+
+算法收敛曲线如图\ref{fig:convergence}所示，可见算法在【替换代数】代后收敛，结果可复现。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig3_convergence.png}
+    \caption{算法收敛曲线}
+    \label{fig:convergence}
+    \begin{center}
+        \footnotesize 【替换】本图展示了算法的收敛过程，横轴为迭代代数，纵轴为目标函数值。
+    \end{center}
+\end{figure}
+
+% ============================ 七、模型评价与推广 =============================
+\section{模型评价与推广}
+
+\subsection{模型优点}
+\begin{enumerate}
+    \item \textbf{普适性强}：模型可推广至【替换其他场景】；
+    \item \textbf{算法高效}：【替换方法】在【替换规模】下【替换秒级】求解；
+    \item \textbf{约束全面}：考虑了【替换约束 1】、【替换约束 2】等关键因素。
+\end{enumerate}
+
+\subsection{模型不足}
+\begin{enumerate}
+    \item 忽略了【替换因素】，可能导致【替换偏差方向】；
+    \item 部分参数（如【替换参数】）依赖【替换来源】，实际场景需重新标定。
+\end{enumerate}
+
+\subsection{模型推广}
+\begin{enumerate}
+    \item 可尝试用【替换方法 A】代替【替换方法 B】，以【替换改善方向】；
+    \item 可引入【替换更复杂约束/随机因素】，使模型更贴近实际。
+\end{enumerate}
+
+% ============================ AI 工具使用声明（2026 国赛新规）================
+% 位置：正文之后、参考文献之前
+% 二选一：未使用 AI / 已使用 AI
+% AIDC < 20% 可填报"未使用"
+\section*{AI 工具使用声明}
+\addcontentsline{toc}{section}{AI 工具使用声明}
+
+本队伍在本次竞赛中\textbf{【替换：未使用 / 使用了】} AI 工具。
+
+% ---- 若未使用 AI，删除以下内容 ----
+% ---- 若使用 AI，按实际填写以下内容 ----
+\begin{itemize}
+    \item \textbf{工具名称与版本}：【替换】如 ChatGPT-4 / Claude-3.5 / 文心一言 4.0
+    \item \textbf{使用场景}：【替换】语言润色 / 代码调试 / 模型思路梳理 / 数据整理
+    \item \textbf{典型交互实例}：（附 1~3 次核心交互记录，无需全部对话）
+    \item \textbf{人工修改与核验说明}：【替换】所有 AI 输出内容均经人工逐项核实、修正与优化，未直接照搬 AI 生成内容。
+\end{itemize}
+
+\newpage
+
+% ============================ 八、参考文献 ===================================
+\section{参考文献}
+\begin{thebibliography}{99}
+    \bibitem{1} 姜启源, 谢金星, 叶俊. 数学模型(第五版)[M]. 北京: 高等教育出版社, 2018.
+    \bibitem{2} 全国大学生数学建模竞赛组委会. 【替换年份】年【替换赛题名】[Z]. 【替换年份】.
+    \bibitem{3} Holland J H. Adaptation in Natural and Artificial Systems[M]. MIT Press, 1992.
+    \bibitem{4} Box G E P, Jenkins G M. Time Series Analysis: Forecasting and Control[M]. Holden-Day, 1976.
+    \bibitem{5} 【替换】作者. 论文名[J]. 期刊名, 年份, 卷号(期号): 页码.
+\end{thebibliography}
+
+% ============================ 附录 ===========================================
+\appendix
+
+\section*{附录 A：完整计算结果数据表}
+\addcontentsline{toc}{section}{附录 A：完整计算结果数据表}
+
+\begin{longtable}{cccccccc}
+    \caption{【替换】完整计算结果数据表} \label{tab:appendix_data} \\
+    \toprule
+    【替换列 1】 & 【替换列 2】 & 【替换列 3】 & 【替换列 4】 & 【替换列 5】 & 【替换列 6】 & 【替换列 7】 & 【替换列 8】 \\
+    \midrule
+    \endfirsthead
+    \multicolumn{8}{l}{\small 续表 \thetable} \\
+    \toprule
+    【替换列 1】 & 【替换列 2】 & 【替换列 3】 & 【替换列 4】 & 【替换列 5】 & 【替换列 6】 & 【替换列 7】 & 【替换列 8】 \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{8}{r}{\small 接下页} \\
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    % 在此填入数据行
+    【替换】 & 【替换】 & 【替换】 & 【替换】 & 【替换】 & 【替换】 & 【替换】 & 【替换】 \\
+\end{longtable}
+
+\section*{附录 B：核心程序源代码}
+\addcontentsline{toc}{section}{附录 B：核心程序源代码}
+
+\begin{lstlisting}[caption={【替换】核心求解程序代码}, label={code:solver}]
+# -*- coding: utf-8 -*-
+"""
+【替换】模块名：核心求解器
+功能：【替换简述】
+作者：【替换】
+日期：【替换】
+"""
+import numpy as np
+import pulp  # 或 import gurobipy as gp
+
+def solve_model(data):
+    """
+    【替换】求解主函数
+    输入：data - 【替换数据描述】
+    输出：result - 【替换结果描述】
+    """
+    # 1. 数据预处理
+    # 【替换代码】
+
+    # 2. 构建模型
+    # model = pulp.LpProblem("MILP", pulp.LpMinimize)
+    # 【替换代码】
+
+    # 3. 定义决策变量
+    # x = pulp.LpVariable.dicts("x", (items, days), lowBound=0, cat='Integer')
+    # 【替换代码】
+
+    # 4. 目标函数与约束
+    # 【替换代码】
+
+    # 5. 求解
+    # model.solve(pulp.PULP_CBC_CMD(msg=0, timeLimit=120))
+
+    # 6. 输出结果
+    # result = {...}
+    # return result
+    pass
+
+if __name__ == "__main__":
+    data = {}  # 【替换】载入数据
+    result = solve_model(data)
+    print(result)
+\end{lstlisting}
+
+\end{document}

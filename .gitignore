@@ -1,0 +1,28 @@
+# 编译产物
+02_论文/build/
+build/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.xdv
+*.synctex.gz
+
+# 临时锁文件（LibreOffice 等）
+.~lock.*#
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Python 缓存
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 编辑器
+*.swp

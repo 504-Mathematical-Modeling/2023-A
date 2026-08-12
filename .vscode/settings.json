@@ -1,0 +1,67 @@
+{
+  // LaTeX Workshop 配置：产物统一输出到 02_论文/build/，保持论文文件夹干净
+  // 保存时自动编译（latexmk + xelatex，支持 ctex 中文）
+  // 编译成功后自动清理 aux/log 等中间产物（保留 pdf 与 synctex.gz，保证正反向定位）
+
+  "latex-workshop.latex.autoBuild.run": "onSave",
+
+  // 用 latexmk 作为唯一编译工具，-outdir 指定输出目录
+  // 强制使用配置的配方，忽略 .tex 开头的 % !TeX program 魔法注释
+  "latex-workshop.latex.build.forceRecipeUsage": true,
+  "latex-workshop.latex.recipe.default": "latexmk",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk",
+      "tools": ["latexmk"]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-xelatex",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {}
+    }
+  ],
+
+  // 输出目录：论文文件同级的 build/ 子目录（如 02_论文/build/）
+  "latex-workshop.latex.outDir": "%DIR%/build",
+
+  // 编译成功后自动清理中间文件；失败时保留 log 便于排错
+  "latex-workshop.latex.autoClean.run": "onSucceeded",
+
+  // 用 glob 方式精确指定清理范围（不删 synctex.gz，保留 PDF 源码跳转）
+  "latex-workshop.latex.clean.method": "glob",
+  "latex-workshop.latex.clean.subfolder.enabled": true,
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.fdb_latexmk",
+    "*.fls",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.log",
+    "*.nav",
+    "*.nlo",
+    "*.nls",
+    "*.out",
+    "*.snm",
+    "*.toc",
+    "*.vrb",
+    "*.xdv"
+  ],
+
+  // PDF 预览：从 build 目录读；正反向定位（Ctrl+点击 PDF 跳源码）
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.synctex.afterBuild.enabled": true
+}
