@@ -154,13 +154,7 @@
 % ---- 第 3 段：问题二（引入新约束）----
 \textbf{针对问题二}，【替换新增约束】，修正了【替换关键方程】。重新求解后，得到【替换指标】为\res{【替换具体数字】}，较问题一\res{【替换上升/下降】}\res{【替换百分比】}\%。
 
-% ---- 第 4 段：问题三（大规模/扩展）----
-\textbf{针对问题三}，针对【替换规模特征】，设计了\res{【替换双层/分层】}框架：外层【替换方法】搜索【替换决策变量】，内层【替换方法】计算【替换目标】。求得\res{【替换结果】}为\res{【替换具体数字】}。
-
-% ---- 第 5 段：问题四（随机性/鲁棒）----
-\textbf{针对问题四}，引入【替换预测模型】对【替换数据】拟合（$\mu=$【替换均值】，$\sigma=$【替换标准差】），通过【替换 N】次蒙特卡洛模拟验证，\res{【替换指标】}满足【替换约束】。
-
-% ---- 第 6 段：总结（模型特色 + 推广价值）----
+% ---- 第 4 段：总结（模型特色 + 推广价值）----
 \textbf{本文模型具有【替换普适性/扩展性】，对【替换实际场景】具有指导意义。}
 }
 
@@ -171,21 +165,23 @@
 % ============================ 一、问题重述 ===================================
 \section{问题重述}
 
-本题要求为【替换研究对象】制定【替换目标】方案。【替换研究对象】具有【替换特征 1】、【替换特征 2】等复杂性。
+定日镜场是一种利用大规模定日镜将太阳辐射聚集至集热器以产生高温热能的太阳能热发电系统。本题要求对给定布局的定日镜场进行光学效率与输出热功率的计算，并进一步对镜场布局进行优化设计。
 
 \textbf{已知条件}包括：
 \begin{enumerate}
-    \item 【替换已知条件 1】；
-    \item 【替换已知条件 2】；
-    \item 【替换已知条件 3】。
+    \item 镜场位于东经 $98.5^{\circ}$、北纬 $39.4^{\circ}$，海拔 $3000\;\mathrm{m}$ 的圆形区域，半径 $350\;\mathrm{m}$；
+    \item 吸收塔建于镜场中心 $(0,\,0)$，集热器为圆柱形外表受光式，中心高度 $80\;\mathrm{m}$，直径 $7\;\mathrm{m}$（半径 $R=3.5\;\mathrm{m}$），高度区间 $[76,\,84]\;\mathrm{m}$；
+    \item 吸收塔周围 $100\;\mathrm{m}$ 范围内不安装定日镜；
+    \item 定日镜为平面矩形，上下两边始终平行于地面，镜面反射率 $\eta_{\mathrm{ref}} = 0.92$；
+    \item 相邻定日镜底座中心最小间距为镜面宽度 $+ 5\;\mathrm{m}$；
+    \item 太阳位置按当地时间每月 21 日的 $9{:}00$、$10{:}30$、$12{:}00$、$13{:}30$、$15{:}00$ 五个时刻计算，共 $60$ 个代表时刻。
 \end{enumerate}
 
-\textbf{核心任务}是在满足【替换约束】的条件下，建立【替换模型类型】，求解使【替换目标】最优的【替换方案】。具体分为【替换 N】个递进问题：
+\textbf{核心任务}是建立定日镜场光学效率的数学模型，分别求解以下三个递进问题：
 \begin{itemize}
-    \item \textbf{问题一}：要求【替换基础任务】；
-    \item \textbf{问题二}：引入【替换新约束】；
-    \item \textbf{问题三}：扩展至【替换更大规模】；
-    \item \textbf{问题四}：引入【替换随机性】。
+    \item \textbf{问题一}：给定定日镜尺寸 $6\;\mathrm{m} \times 6\;\mathrm{m}$、安装高度 $4\;\mathrm{m}$，以及附件提供的 $1745$ 面定日镜坐标，计算年平均光学效率、年平均输出热功率及单位镜面面积年平均输出热功率；
+    \item \textbf{问题二}：在额定年平均输出热功率 $60\;\mathrm{MW}$ 的约束下，以单位镜面面积年平均输出热功率最大为目标，优化吸收塔位置、定日镜统一尺寸、安装高度及镜面布局；
+    \item \textbf{问题三}：在额定功率 $60\;\mathrm{MW}$ 的约束下，允许每面定日镜的尺寸与安装高度不同，进一步优化镜场设计。
 \end{itemize}
 
 % ============================ 二、问题分析 ===================================
@@ -193,9 +189,16 @@
 
 \subsection{问题一分析}
 
-\textbf{问题特征}：【替换 2~3 句难点描述，如"多级 BOM 耦合""非线性瓶颈""随机需求"】。
+问题一要求在给定镜场布局下计算光学效率与输出热功率。根据题目定义，单面定日镜的光学效率由五个分量相乘得到：
+\begin{equation}
+    \eta = \eta_{\mathrm{sb}} \cdot \eta_{\mathrm{cos}} \cdot \eta_{\mathrm{at}} \cdot \eta_{\mathrm{trunc}} \cdot \eta_{\mathrm{ref}}
+    \label{eq:eta_decomp}
+\end{equation}
+其中 $\eta_{\mathrm{sb}}$ 为阴影遮挡效率、$\eta_{\mathrm{cos}}$ 为余弦效率、$\eta_{\mathrm{at}}$ 为大气透射率、$\eta_{\mathrm{trunc}}$ 为截断效率、$\eta_{\mathrm{ref}}$ 为镜面反射率。
 
-\textbf{模型选择依据}：鉴于本问题的【替换线性/非线性】特征，且目标函数【替换性质】，本文采用【替换方法】作为求解方法。【替换方法】可精确描述【替换决策变量含义】，这是【替换其他方法】无法实现的\cite{1}。
+\textbf{计算难点}在于阴影遮挡效率与截断效率的几何计算：阴影遮挡效率需要判断镜面之间的几何遮挡关系，涉及射线-矩形求交运算；截断效率需要考虑太阳光锥的发散效应，判断反射光束能否命中集热器圆柱面，涉及射线-圆柱求交运算。余弦效率和大气透射率可由解析公式直接获得。
+
+\textbf{模型选择依据}：鉴于镜场中 $1745$ 面定日镜的阴影遮挡判定需两两比较，直接遍历的计算量为 $O(N^2)$ 级别，本文采用空间近邻筛选策略：对每面镜仅在其预设筛选半径内的候选镜面上进行精确判定，并通过扩大筛选半径的对照实验验证结果的稳定性，从而显著减少耗时较高的射线-矩形求交次数。截断效率的计算采用 Sobol 准随机序列在太阳光锥内采样，该序列具有良好的空间均匀性，且样本数取 $2$ 的幂时便于增量加密。
 
 \subsection{问题二分析}
 
@@ -208,12 +211,6 @@
 \textbf{问题特征}：【替换规模扩展与新增复杂度的描述】。
 
 \textbf{模型选择依据}：针对本问题大规模维度与【替换搜索空间】的双重复杂性，若采用单一【替换方法】求解，【替换困难】。因此本文采用降维分解策略，设计了\textbf{【替换双层/分层】框架}：外层【替换方法】在【替换决策空间】进行全局搜索\cite{2}，内层【替换方法】计算【替换目标】。
-
-\subsection{问题四分析}
-
-\textbf{问题特征}：【替换随机性描述，如"需求服从正态分布""概率交付率约束"】。
-
-\textbf{模型选择依据}：针对本问题的随机性特征，本文采用"【替换预测】+\textbf{【替换量化】}+【替换验证】"的三步法。
 
 \subsection{研究技术路线}
 
@@ -234,107 +231,420 @@
 
 为了简化模型并聚焦于核心问题，我们做出以下合理假设：
 \begin{enumerate}
-    \item 假设【替换假设 1，如"生产准备费用按批次计费，与生产数量无关"】；
-    \item 假设【替换假设 2，如"子组件生产不占用瓶颈设备工时"】；
-    \item 假设【替换假设 3，如"检修日当天完全停工"】；
-    \item 假设【替换假设 4，如"未来需求服从正态分布"】；
-    \item 假设【替换假设 5，如"物料消耗系数在整个周期内保持不变"】。
+    \item 假设吸收塔为与集热器等半径的圆柱（保守近似，题目未给出塔身半径），两者合并为 $z \in [0,\,84]\;\mathrm{m}$ 的连续圆柱体；塔身圆柱仅用于塔影遮挡判定，集热器接收判定仍只取 $z \in [76,\,84]\;\mathrm{m}$。敏感性检验表明，塔身半径在 $2$--$4\;\mathrm{m}$ 范围内变化时，最不利时刻（冬季低太阳角）受塔影遮挡的采样点占比仅 $0.24\%$--$0.56\%$，相对 $3.5\;\mathrm{m}$ 基准的变化不超过 $0.2$ 个百分点，该假设对结果的影响可忽略；
+    \item 假设定日镜为理想平面镜，不考虑镜面弯曲变形；
+    \item 假设忽略定日镜跟踪误差及风载引起的镜面偏转，镜面法向量精确指向目标点；
+    \item 假设太阳视圆盘半角取 $\sigma = 4.65\;\mathrm{mrad}$，将太阳光束视为半角为 $\sigma$ 的锥形光束，且视圆盘内辐射能流密度均匀分布，不考虑临边昏暗、跟踪误差及镜面面形误差；
+    \item 假设月均性能取每月 21 日五个时刻的等权平均，年均性能取 12 个月的等权平均；
+    \item 假设按晴天大气模型计算法向直射辐照度（DNI），不考虑云量、气溶胶等天气因素；
+    \item 假设忽略镜面间多次反射与地面反射对能量传递的影响；
+    \item 假设题目给定的当地时间即为当地太阳时，不额外进行经度时差修正。
 \end{enumerate}
 
 % ============================ 四、符号说明 ===================================
 \section{符号说明}
 
-\begin{table}[H]
-    \centering
-    \renewcommand{\arraystretch}{1.4}
-    \caption{主要符号及其含义}
-    \label{tab:symbols}
-    \begin{tabular}{cll}
-        \toprule
-        符号 & 意义说明 & 单位 \\
-        \midrule
-        $i$ & 【替换】组件项目编号 & — \\
-        $t$ & 【替换】天数或周数索引 & 天/周 \\
-        $D_{i,t}$ & 第 $t$ 天组件 $i$ 的外部需求 & 件 \\
-        $x_{i,t}$ & 决策变量，第 $t$ 天组件 $i$ 的生产数量 & 件 \\
-        $y_{i,t}$ & 0-1 变量，第 $t$ 天是否生产组件 $i$ & — \\
-        $z_{i,t}$ & 决策变量，第 $t$ 天结束时组件 $i$ 的库存数量 & 件 \\
-        $S_i$ & 组件 $i$ 的单次生产准备费用 & 元/次 \\
-        $H_i$ & 组件 $i$ 的单件每日库存持有费用 & 元/(件·天) \\
-        $C_t$ & 第 $t$ 天的瓶颈设备总工时上限 & 工时 \\
-        $M$ & 充分大正数（用于大 M 法） & — \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{longtable}{c@{\hspace{7.5em}}c@{\hspace{7.5em}}l}
+    \toprule
+    符号 & 意义说明 & 单位 \\
+    \midrule
+    \endfirsthead
+    \toprule
+    符号 & 意义说明 & 单位 \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{3}{r}{\small 接下页} \\
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    $H_i$ & 第 $i$ 面定日镜的镜心坐标 & m \\
+    $\mathbf{n}_i$ & 第 $i$ 面定日镜的法向量 & — \\
+    $\mathbf{s}$ & 太阳方向单位向量 & — \\
+    $\mathbf{r}_i$ & 第 $i$ 面定日镜的反射方向单位向量 & — \\
+    $\varphi$ & 当地地理纬度 & rad \\
+    $\delta$ & 太阳赤纬角 & rad \\
+    $\omega$ & 太阳时角 & rad \\
+    $\alpha_s$ & 太阳高度角 & rad \\
+    $D$ & 以春分（3 月 21 日）为第 0 天的天数 & 天 \\
+    $G_0$ & 太阳常数，$G_0 = 1.366$ & kW/m$^{2}$ \\
+    $\eta_{\mathrm{cos}}$ & 余弦效率 & — \\
+    $\eta_{\mathrm{sb}}$ & 阴影遮挡效率 & — \\
+    $\eta_{\mathrm{at}}$ & 大气透射率 & — \\
+    $\eta_{\mathrm{trunc}}$ & 截断效率 & — \\
+    $\eta_{\mathrm{ref}}$ & 镜面反射率 & — \\
+    $\eta$ & 综合光学效率 & — \\
+    $W$ & 定日镜边长（问题一中 $W = 6$） & m \\
+    $h$ & 定日镜安装高度（问题一中 $h = 4$） & m \\
+    $R$ & 集热器半径，$R = 3.5$ & m \\
+    $A_i$ & 第 $i$ 面定日镜的镜面面积 & m$^{2}$ \\
+    $N$ & 定日镜总数，$N = 1745$ & 面 \\
+    $\sigma$ & 太阳光锥半角，$\sigma = 4.65$ & mrad \\
+    $d_{\mathrm{HR}}$ & 镜面中心到集热器中心的空间距离 & m \\
+    $R_c$ & 候选遮挡镜面筛选半径 & m \\
+    DNI & 法向直射辐照度 & kW/m$^{2}$ \\
+    $P$ & 镜场输出热功率 & MW \\
+    $q$ & 单位镜面面积输出热功率 & kW/m$^{2}$ \\
+\end{longtable}
 
 % ============================ 五、模型的建立与求解 ===========================
 \section{模型的建立与求解}
 
-\subsection{问题一：基础模型}
+\subsection{问题一：光学效率计算模型}
 
-\subsubsection{目标函数}
-
-以【替换时间范围】内总成本最小为目标，总成本由【替换分量 1】和【替换分量 2】构成：
+问题一要求在给定镜场布局下计算年平均光学效率与输出热功率。根据题目定义，单面定日镜的光学效率由五个分量相乘得到：
 \begin{equation}
-    \min F = \sum_{i \in N} \sum_{t=1}^{T} \left( H_i \cdot z_{i,t} + S_i \cdot y_{i,t} \right)
-    \label{eq:obj1}
+    \eta = \eta_{\mathrm{sb}} \cdot \eta_{\mathrm{cos}} \cdot \eta_{\mathrm{at}} \cdot \eta_{\mathrm{trunc}} \cdot \eta_{\mathrm{ref}}
+    \label{eq:eta_total}
 \end{equation}
-其中第一项为【替换含义 1】，第二项为【替换含义 2】。
+其中 $\eta_{\mathrm{sb}}$ 为阴影遮挡效率、$\eta_{\mathrm{cos}}$ 为余弦效率、$\eta_{\mathrm{at}}$ 为大气透射率、$\eta_{\mathrm{trunc}}$ 为截断效率、$\eta_{\mathrm{ref}} = 0.92$ 为镜面反射率（题目附录建议值）。
 
-\subsubsection{约束条件}
+求解流程分为五步：\textbf{首先}由日期与时刻计算太阳赤纬角、时角与太阳方向向量；\textbf{其次}由反射定律确定每面镜的法向量，解析计算余弦效率与大气透射率；\textbf{再次}在每面镜面上布设采样网格，通过射线-矩形求交判定塔影、镜间阴影与挡光，得到阴影遮挡效率；\textbf{然后}用 Sobol 序列在太阳光锥内采样，通过射线-圆柱求交判定命中率，得到截断效率；\textbf{最后}将五个分量相乘得到综合光学效率，并按 $60$ 个代表时刻汇总为月均与年均指标。下面依次建立各分量的计算模型。
 
-\textbf{（1）库存平衡约束：}
+\subsubsection{数据预处理}
+
+附件给出了 $1745$ 面定日镜中心的水平坐标。建模前先对数据进行质量检查：镜面总数恰为 $1745$ 面，无缺失、无重复坐标；镜心到吸收塔的水平距离最小 $107.9\;\mathrm{m}$、最大 $337.1\;\mathrm{m}$，全部落在题目规定的 $[100,\,350]\;\mathrm{m}$ 环形安装区域内；相邻镜心的最小间距为 $11.68\;\mathrm{m}$，满足"相邻定日镜底座中心间距比镜面宽度多 $5\;\mathrm{m}$ 以上"（$6+5=11\;\mathrm{m}$）的约束。数据质量满足建模要求，镜场总面积 $A_{\mathrm{total}} = 1745 \times 36 = 62820\;\mathrm{m}^{2}$。
+
+\subsubsection{太阳几何模型}
+
+太阳位置是光学效率计算的基础\cite{5}。需要确定三个几何量：太阳赤纬角 $\delta$、太阳时角 $\omega$ 和太阳方向单位向量 $\mathbf{s}$。
+
+\textbf{（1）太阳赤纬角}
+
+太阳赤纬角 $\delta$ 由日期决定，表示太阳直射点相对于赤道的偏角。以春分（3 月 21 日）为第 $0$ 天，$D$ 为给定日期相对春分的天数，则：
 \begin{equation}
-    z_{i,t} = z_{i,t-1} + x_{i,t} - D_{i,t} - \sum_{j \in P_i} R_{i,j} \cdot x_{j,t}, \quad \forall i,\; t=1,\ldots,T
-    \label{eq:inv1}
+    \sin\delta = \sin\!\left(\frac{2\pi D}{365}\right) \cdot \sin(23.45^{\circ})
+    \label{eq:declination}
 \end{equation}
-其中 $P_i$ 为【替换集合含义】。该约束表明：【替换文字解释】。
+每月 21 日对应的天数 $D$ 如表~\ref{tab:month_D} 所示。
 
-\textbf{（2）产能上限约束：}
+\begin{table}[H]
+    \centering
+    \caption{每月 21 日相对春分的天数 $D$}
+    \label{tab:month_D}
+    \small
+    \begin{tabular}{ccccccccccccc}
+        \toprule
+        月份 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+        \midrule
+        $D$ & 306 & 337 & 0 & 31 & 61 & 92 & 122 & 153 & 184 & 214 & 245 & 275 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{（2）太阳时角}
+
+太阳时角 $\omega$ 表征一天中太阳的东升西落，当地时间 $ST$（单位：h）与时角的关系为：
 \begin{equation}
-    \sum_{i \in \mathcal{B}} A_i \cdot x_{i,t} \leq C_t, \quad \forall t=1,\ldots,T
-    \label{eq:cap1}
+    \omega = \frac{\pi}{12}(ST - 12)
+    \label{eq:hour_angle}
 \end{equation}
-其中 $\mathcal{B}$ 为【替换集合】，【替换说明】。
+正午 $ST=12$ 时 $\omega=0$，上午 $\omega<0$，下午 $\omega>0$。本题取每月 21 日的 $9{:}00$、$10{:}30$、$12{:}00$、$13{:}30$、$15{:}00$ 五个代表时刻。
 
-\textbf{（3）生产状态逻辑约束（大 M 法）：}
+\textbf{（3）太阳高度角与方向向量}
+
+太阳高度角 $\alpha_s$ 满足：
 \begin{equation}
-    x_{i,t} \leq M \cdot y_{i,t}, \quad \forall i,\; t=1,\ldots,T
-    \label{eq:logic1}
+    \sin\alpha_s = \cos\delta\cos\varphi\cos\omega + \sin\delta\sin\varphi
+    \label{eq:altitude}
 \end{equation}
-当 $y_{i,t}=0$ 时强制 $x_{i,t}=0$；当 $y_{i,t}=1$ 时 $x_{i,t}$ 可取任意非负值。
+其中 $\varphi = 39.4^{\circ}$ 为当地地理纬度。
 
-\textbf{（4）初始与终止约束：}
+在镜场坐标系（$x$ 正东、$y$ 正北、$z$ 正上）中，太阳方向单位向量 $\mathbf{s}$ 为：
 \begin{equation}
-    z_{i,0} = 0, \quad z_{i,T} = 0, \quad \forall i
-    \label{eq:bound1}
+    \mathbf{s} = \frac{1}{|\mathbf{s}_0|}\begin{pmatrix} -\cos\delta\sin\omega \\ \cos\varphi\sin\delta - \sin\varphi\cos\delta\cos\omega \\ \sin\alpha_s \end{pmatrix}
+    \label{eq:sun_vector}
 \end{equation}
+该向量由太阳高度角和方位角经坐标变换直接得到，避免了先求方位角再转笛卡尔坐标时上午/下午信息丢失的问题。
 
-\subsubsection{模型求解算法}
+\subsubsection{法向直射辐照度}
 
-采用【替换求解器，如 Gurobi/CBC】求解器直接求解上述混合整数线性规划模型。算法步骤如下：
+法向直射辐照度 DNI（Direct Normal Irradiance）是垂直于太阳光线的单位面积上接收到的太阳辐射功率，按题目附录给出的经验公式计算\cite{3}：
+\begin{equation}
+    \mathrm{DNI} = G_0\left[a + b\exp\!\left(-\frac{c}{\sin\alpha_s}\right)\right]
+    \label{eq:DNI}
+\end{equation}
+其中 $G_0 = 1.366\;\mathrm{kW/m^2}$ 为太阳常数，$\alpha_s$ 为太阳高度角，系数 $a,b,c$ 与海拔 $H$（单位：km）有关：
+\begin{equation}
+    \begin{cases}
+        a = 0.4237 - 0.00821(6 - H)^2 \\[4pt]
+        b = 0.5055 + 0.00595(6.5 - H)^2 \\[4pt]
+        c = 0.2711 + 0.01858(2.5 - H)^2
+    \end{cases}
+    \label{eq:DNI_coeff}
+\end{equation}
+本镜场海拔 $H = 3\;\mathrm{km}$，代入得 $a = 0.3498$，$b = 0.5784$，$c = 0.2757$。低太阳角时 $\sin\alpha_s$ 趋于 $0$，指数项 $\exp(-c/\sin\alpha_s)$ 趋于 $0$，DNI 趋近 $G_0 \cdot a$；高太阳角时指数项贡献增大，DNI 增大。
+
+\subsubsection{余弦效率}
+
+余弦效率 $\eta_{\mathrm{cos}}$ 反映太阳光线入射角对镜面有效采光面积的衰减。设第 $i$ 面定日镜中心坐标为 $\mathbf{H}_i = (x_i, y_i, h)$，集热器中心坐标为 $\mathbf{C} = (0, 0, 80)\;\mathrm{m}$，则镜心指向集热器中心的单位向量为：
+\begin{equation}
+    \mathbf{t}_i = \frac{\mathbf{C} - \mathbf{H}_i}{|\mathbf{C} - \mathbf{H}_i|}
+    \label{eq:t_vector}
+\end{equation}
+根据反射定律，定日镜法向量应平分太阳方向 $\mathbf{s}$ 与反射目标方向 $\mathbf{t}_i$ 的夹角：
+\begin{equation}
+    \mathbf{n}_i = \frac{\mathbf{s} + \mathbf{t}_i}{|\mathbf{s} + \mathbf{t}_i|}
+    \label{eq:normal}
+\end{equation}
+余弦效率定义为太阳方向在法向上的投影：
+\begin{equation}
+    \eta_{\mathrm{cos},i} = \mathbf{s} \cdot \mathbf{n}_i
+    \label{eq:eta_cos}
+\end{equation}
+当太阳光线垂直入射时 $\eta_{\mathrm{cos}} = 1$（最大），入射角越大余弦效率越低。该值仅依赖镜面位置与太阳方向，与镜间布局无关，可对所有镜面向量化计算。
+
+\subsubsection{大气透射率}
+
+太阳光从镜面反射后到达集热器的过程中，大气衰减与传播距离有关。设镜面中心到集热器中心的距离为 $d_{\mathrm{HR}}$（单位：m），大气透射率按题目附录的经验公式计算\cite{4}：
+\begin{equation}
+    \eta_{\mathrm{at}} = 0.99321 - 0.0001176\,d_{\mathrm{HR}} + 1.97 \times 10^{-8} \times d_{\mathrm{HR}}^{2}, \quad d_{\mathrm{HR}} \leq 1000\;\mathrm{m}
+    \label{eq:eta_at}
+\end{equation}
+其中距离 $d_{\mathrm{HR}}$ 为：
+\begin{equation}
+    d_{\mathrm{HR}} = |\mathbf{C} - \mathbf{H}_i| = \sqrt{x_i^2 + y_i^2 + (80 - h)^2}
+    \label{eq:d_HR}
+\end{equation}
+$\eta_{\mathrm{at}}$ 仅依赖镜面位置，不随时刻变化，可一次性预计算。
+
+\subsubsection{阴影遮挡效率}
+
+阴影遮挡效率 $\eta_{\mathrm{sb}}$ 是本模型计算量最大的分量，按张平等\cite{2}给出的分类，需要考虑三层遮挡关系。
+
+\textbf{（1）塔身阴影}
+
+吸收塔（含集热器）简化为半径 $R_t = 3.5\;\mathrm{m}$、高度 $[0, 84]\;\mathrm{m}$ 的圆柱体。镜面上的采样点 $P$ 沿太阳方向 $\mathbf{s}$ 发射射线，若在到达太阳之前先碰到塔身圆柱，则该点被塔阴影遮挡。光线-圆柱求交归结为水平分量的二次方程：
+\begin{equation}
+    A\lambda^2 + B\lambda + C = 0
+    \label{eq:ray_cyl}
+\end{equation}
+其中 $A = s_x^2 + s_y^2$，$B = 2(P_x s_x + P_y s_y)$，$C = P_x^2 + P_y^2 - R_t^2$。取最小正根 $\lambda$，若交点高度 $P_z + \lambda s_z \in [0, 84]\;\mathrm{m}$，则该点被遮挡。
+
+\textbf{（2）镜间阴影与挡光}
+
+相邻镜面之间的遮挡分为两类：
+\begin{itemize}
+    \item \textbf{阴影}：采样点沿太阳方向 $\mathbf{s}$ 被前排镜面遮挡（阻挡阳光到达镜面）；
+    \item \textbf{挡光}：反射光线沿 $\mathbf{r}_i = 2(\mathbf{s} \cdot \mathbf{n}_i)\mathbf{n}_i - \mathbf{s}$ 方向被前排镜面阻挡（反射光无法到达集热器）。
+\end{itemize}
+阴影与挡光判定均按太阳中心主光线方向进行：太阳锥角 $\sigma = 4.65\;\mathrm{mrad}$ 很小，在 $20\;\mathrm{m}$ 筛选半径内由光锥造成的半影宽度仅约 $2\sigma \times 20 \approx 0.19\;\mathrm{m}$，远小于镜面边长 $6\;\mathrm{m}$，该小发散角近似合理；光锥的发散效应仅在截断效率计算中考虑。
+
+两者判定方法相同：将遮挡镜面建模为矩形平面，判断采样点发出的射线是否与矩形相交。设第 $j$ 面候选遮挡镜中心为 $\mathbf{H}_j$、法向为 $\mathbf{n}_j$、镜面坐标系基向量为 $\mathbf{u}_j$（宽度方向）、$\mathbf{v}_j$（高度方向），射线方向为 $\mathbf{d}$（$\mathbf{s}$ 或 $\mathbf{r}_i$），求交过程为：
 \begin{enumerate}
-    \item 【替换步骤 1，如"构建 BOM 消耗矩阵 $R$"】；
-    \item 【替换步骤 2，如"定义决策变量并设置边界"】；
-    \item 【替换步骤 3，如"构建目标函数与约束，封装为优化问题"】；
-    \item 设置求解器参数（最大运行时间【替换】秒，MIPGap 为 $10^{-4}$），启动求解；
-    \item 输出最优【替换方案】表和【替换辅助表】。
+    \item 射线与镜面 $j$ 所在平面的交点参数：$\lambda = \dfrac{(\mathbf{H}_j - P) \cdot \mathbf{n}_j}{\mathbf{d} \cdot \mathbf{n}_j}$
+    \item 交点在镜面 $j$ 坐标系中的局部坐标：$u = (Q - \mathbf{H}_j) \cdot \mathbf{u}_j$，$v = (Q - \mathbf{H}_j) \cdot \mathbf{v}_j$
+    \item 判定：若 $\lambda > 0$ 且 $|u| \leq W/2$、$|v| \leq W/2$，则射线被遮挡镜面 $j$ 阻挡
 \end{enumerate}
+每面镜的遮挡判定只需在空间近邻候选集内进行：太阳高度角最低（$14.4^{\circ}$）时，镜间阴影在相邻镜面高度上的水平延伸约为 $12\;\mathrm{m}$，取筛选半径 $R_c = 20\;\mathrm{m}$ 可覆盖绝大多数遮挡事件。以最不利时刻（12 月 21 日 9:00）为例，$20\;\mathrm{m}$ 筛选与全镜场两两判定的输出热功率偏差仅约 $0.1\%$（残余差异来自镜面边缘采样点的少量远距离遮挡事件），且 $30\;\mathrm{m}$ 及以上筛选半径与全镜场结果完全一致；年均口径下 $20\;\mathrm{m}$ 与 $40\;\mathrm{m}$ 的光学效率相对差仅 $0.004\%$（表~\ref{tab:convergence}），可忽略。该策略使每面镜的平均候选镜数量由 $1745$ 降至约 $6$ 个，大幅减少射线-矩形求交次数。
+
+\textbf{（3）阴影遮挡效率}
+
+每面镜面上布置 $10 \times 10$ 的均匀采样网格（共 $100$ 个采样点），统计未被任何遮挡覆盖的有效采样点比例：
+\begin{equation}
+    \eta_{\mathrm{sb},i} = \frac{\text{有效采样点数}}{\text{总采样点数}}
+    \label{eq:eta_sb}
+\end{equation}
+
+\subsubsection{截断效率}
+
+太阳光并非理想平行光，而是半角 $\sigma = 4.65\;\mathrm{mrad}$ 的锥形光束\cite{2}。反射后的光锥可能部分超出集热器接收范围，截断效率 $\eta_{\mathrm{trunc}}$ 度量反射光锥命中集热器的比例。
+
+\textbf{（1）光锥内入射方向采样}
+
+采用 Sobol 准随机序列在光锥内生成 $K$ 条入射方向（$K = 1024$，$2$ 的幂以保证 Sobol 平衡性）。光锥坐标系中，第 $k$ 条光线与主光线（太阳方向 $\mathbf{s}$）的夹角为：
+\begin{equation}
+    \sigma_k = \sigma_{\max} \cdot \sqrt{u_{1,k}}, \quad \tau_k = 2\pi \cdot u_{2,k}
+    \label{eq:cone_sample}
+\end{equation}
+其中 $(u_{1,k}, u_{2,k})$ 为 Sobol 二维准随机数，$\sqrt{u_1}$ 保证圆盘面积均匀采样。将光锥坐标系下的方向转换回镜场坐标系，得到入射方向 $\mathbf{d}_k$。
+
+\textbf{（2）反射光锥与集热器圆柱求交}
+
+对每条入射方向 $\mathbf{d}_k$，计算反射方向：
+\begin{equation}
+    \mathbf{r}_k = 2(\mathbf{d}_k \cdot \mathbf{n}_i)\mathbf{n}_i - \mathbf{d}_k
+    \label{eq:cone_reflect}
+\end{equation}
+将反射光线与集热器圆柱（半径 $R = 3.5\;\mathrm{m}$，高度 $[76, 84]\;\mathrm{m}$）按式~\eqref{eq:ray_cyl} 求交，若交点高度落在 $[76, 84]\;\mathrm{m}$ 内，则该光线被集热器接收。
+
+\textbf{（3）截断效率}
+
+截断效率定义为被接收的光线占有效采样点发出的总光线的比例：
+\begin{equation}
+    \eta_{\mathrm{trunc},i} = \frac{\text{命中集热器的光线数}}{\text{有效采样点数} \times K}
+    \label{eq:eta_trunc}
+\end{equation}
+其中分母以未被阴影遮挡的有效采样点为准，与题目附录中"镜面全反射能量减去阴影遮挡损失能量"的口径一致——阴影遮挡损失已计入 $\eta_{\mathrm{sb}}$，此处不再重复扣除。
+
+从物理机理上看，定日镜为平面镜而非聚焦镜，镜面上不同位置发出的主光线近似平行，反射后在集热器处形成与镜面尺寸相当的光斑。截断损失来自两个相互制约的效应：\textbf{（1）横向溢出}——光斑直径 $W + 2\sigma d_{\mathrm{HR}}$ 随镜塔距离增大而增大，远场镜面（如 $d_{\mathrm{HR}} = 300\;\mathrm{m}$ 时光斑直径约 $8.8\;\mathrm{m}$）超出集热器直径 $7\;\mathrm{m}$，两侧光线无法被接收；\textbf{（2）纵向溢出}——近场镜面的反射光束以陡峭仰角入射集热器，光束在圆柱面上的竖直足迹被拉长（约为 $(W + 2\sigma d_{\mathrm{HR}})/\cos\theta_i$，$\theta_i$ 为反射方向仰角），超出集热器高度 $8\;\mathrm{m}$ 的部分光线从顶部或底部逸出。两者权衡下，截断效率随镜塔距离呈先升后降的非单调关系，如表~\ref{tab:trunc_distance} 所示：$100$--$150\;\mathrm{m}$ 组最低（约 $0.85$），$200$--$300\;\mathrm{m}$ 组最高（约 $0.96$），$300$--$350\;\mathrm{m}$ 组回落至约 $0.95$。该规律在各代表时刻一致，全场平均截断效率约 $0.94$，与上述机理相符。
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{截断效率随镜塔水平距离的分组统计（6 月 21 日正午）}
+    \label{tab:trunc_distance}
+    \begin{tabular}{lcc}
+        \toprule
+        镜塔水平距离 (m) & 镜面数 & 平均截断效率 \\
+        \midrule
+        100--150 & 268 & 0.8589 \\
+        150--200 & 260 & 0.9457 \\
+        200--250 & 403 & 0.9683 \\
+        250--300 & 439 & 0.9628 \\
+        300--350 & 375 & 0.9518 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{综合光学效率与输出热功率}
+
+综合光学效率由五个分量相乘得到，如式~\eqref{eq:eta_total} 所示。镜场平均光学效率按镜面面积加权：
+\begin{equation}
+    \bar{\eta} = \frac{\sum_{i=1}^{N} A_i \cdot \eta_i}{\sum_{i=1}^{N} A_i}
+    \label{eq:eta_field}
+\end{equation}
+单面定日镜在时刻 $t$ 的输出热功率为：
+\begin{equation}
+    E_i(t) = \mathrm{DNI}(t) \cdot A_i \cdot \eta_i(t)
+    \label{eq:E_i}
+\end{equation}
+镜场总输出热功率为：
+\begin{equation}
+    E_{\mathrm{field}}(t) = \mathrm{DNI}(t) \cdot \sum_{i=1}^{N} A_i \cdot \eta_i(t)
+    \label{eq:E_field}
+\end{equation}
+单位镜面面积输出热功率为：
+\begin{equation}
+    q(t) = \frac{E_{\mathrm{field}}(t)}{\sum_{i=1}^{N} A_i}
+    \label{eq:q}
+\end{equation}
+
+以上各式均为某一时刻 $t$ 的瞬时值，场平均光学效率 $\bar{\eta}(t)$ 由式~\eqref{eq:eta_field} 给出。按题目规定，月均性能取每月 21 日五个代表时刻的等权平均，年均性能取 12 个月的等权平均：
+\begin{equation}
+    \bar{\eta}_m = \frac{1}{5}\sum_{k=1}^{5}\bar{\eta}(m, k), \qquad
+    \bar{\eta}_{\mathrm{year}} = \frac{1}{12}\sum_{m=1}^{12}\bar{\eta}_m
+    \label{eq:avg_month_year}
+\end{equation}
+其中 $\bar{\eta}(m,k)$ 为第 $m$ 月 21 日第 $k$ 个代表时刻的场平均光学效率。输出热功率与单位面积输出热功率的月平均、年平均均按同样口径计算：
+\begin{equation}
+    \bar{P}_m = \frac{1}{5}\sum_{k=1}^{5}P(m,k), \qquad
+    \bar{P}_{\mathrm{year}} = \frac{1}{12}\sum_{m=1}^{12}\bar{P}_m
+    \label{eq:avg_power}
+\end{equation}
+\begin{equation}
+    \bar{q}_m = \frac{1}{5}\sum_{k=1}^{5}q(m,k), \qquad
+    \bar{q}_{\mathrm{year}} = \frac{1}{12}\sum_{m=1}^{12}\bar{q}_m
+    \label{eq:avg_q}
+\end{equation}
+需要说明的是，表~\ref{tab:Q1_annual} 中的年平均光学效率并不等于各分项年平均效率的乘积——各时刻先由五个分量相乘得到综合光学效率，再按时刻平均，二者口径不同，表~\ref{tab:Q1_monthly} 中的月均数据同理。
+
+\subsubsection{模型自检}
+
+为保证计算的正确性，从"实现正确性"与"结果合理性"两方面进行六项自检。\textbf{实现正确性}：（1）反射定律数值精度——镜心主光线经镜面反射后的方向与指向集热器中心的目标方向之间，夹角余弦偏差最大仅 $6.66 \times 10^{-16}$（机器精度量级），验证法向量与反射方向的计算实现正确；（2）零锥角确定性检验——将太阳锥角置零后，镜心主光线应全部命中集热器，实测命中率恰为 $100\%$，验证射线-圆柱求交逻辑正确；（3）采样加密一致性——对 30 面镜抽检，将采样网格与光线数加密至 $20\times20$、$2048$ 条后，截断效率与基准配置（$10\times10$、$1024$ 条）的最大差异仅 $0.0024$。\textbf{结果合理性}：（4）各分项效率在全部 $60$ 个时刻均落在 $[0,\,1]$ 区间内（余弦效率 $0.694$--$0.809$，阴影遮挡效率 $0.857$--$0.939$，截断效率 $0.936$--$0.954$），未出现太阳方向与目标方向夹角超过 $90^{\circ}$ 的退化情形；（5）输出热功率与单位面积输出热功率严格满足 $q = P \times 10^{3} / A_{\mathrm{total}}$（$P$ 单位为 MW，$q$ 单位为 kW/m$^{2}$），逐时刻偏差在 $10^{-15}$ 量级；（6）上午与下午对称时刻（$10{:}30$ 与 $13{:}30$）的综合光学效率差异不超过 $0.5\%$，$9{:}00$ 与 $15{:}00$ 的输出热功率差异为 $0.34\%$--$0.87\%$，与镜场布局近似环形对称的事实相符。上述自检说明模型实现与计算结果在数值上均是自洽的。
+
+\subsubsection{数值实现与收敛性验证}
+
+阴影遮挡效率依赖镜面采样网格数，截断效率依赖光锥光线数 $K$，邻域筛选依赖半径 $R_c$，这些离散化参数的取值需要在精度与耗时之间权衡。为验证参数取值的收敛性，在全部 $60$ 个代表时刻上逐一变动三组参数进行对照实验（其余参数保持基准取值），结果如表~\ref{tab:convergence} 所示。
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{数值参数收敛性验证（全部 60 个代表时刻）}
+    \label{tab:convergence}
+    \begin{tabular}{llccccc}
+        \toprule
+        测试项 & 参数值 & 年均光学效率 & 输出热功率 & 相对误差 & 耗时 \\
+        & & (\%) & (MW) & (\%) & (s) \\
+        \midrule
+        \multirow{3}{*}{网格数 $N$} & 8$\times$8 & 57.81 & 35.35 & 0.22 & 50 \\
+        & 10$\times$10 & 57.77 & 35.32 & 0.14 & 74 \\
+        & 15$\times$15 & 57.68 & 35.27 & — & 153 \\
+        \midrule
+        \multirow{3}{*}{光线数 $K$} & 512 & 57.77 & 35.32 & 0.00 & 45 \\
+        & 1024 & 57.77 & 35.32 & 0.00 & 74 \\
+        & 2048 & 57.77 & 35.32 & — & 137 \\
+        \midrule
+        \multirow{3}{*}{邻域半径 (m)} & 20 & 57.77 & 35.32 & 0.00 & 75 \\
+        & 30 & 57.76 & 35.32 & 0.00 & 81 \\
+        & 40 & 57.76 & 35.32 & — & 88 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+网格数由 $8\times8$ 增至 $15\times15$ 时，年均光学效率变化不超过 $0.22\%$；光线数由 $512$ 增至 $2048$、邻域半径由 $20$ 增至 $40\;\mathrm{m}$ 时结果几乎不变。因此采用 $10\times10$ 采样网格、$1024$ 条光锥光线与 $20\;\mathrm{m}$ 筛选半径，在保证精度的同时兼顾计算效率。
 
 \subsubsection{求解结果}
 
-将题目给定数据代入模型，求解得到最优方案。求解结果显示，问题一的最优【替换指标】为\res{【替换具体数字】}，其中【替换分量 1】=\res{【替换值】}，【替换分量 2】=\res{【替换值】}。
+将题目给定的 $1745$ 面定日镜坐标及参数代入模型，计算得到年平均光学效率及输出热功率如表~\ref{tab:Q1_annual} 所示，每月 21 日平均结果如表~\ref{tab:Q1_monthly} 所示。
 
-最优生产计划如图\ref{fig:gantt}所示。
+\begin{table}[H]
+    \centering
+    \small
+    \caption{问题一年平均光学效率及输出功率}
+    \label{tab:Q1_annual}
+    \begin{tabular}{cccccc}
+        \toprule
+        光学效率 & 余弦效率 & 阴影遮挡效率 & 截断效率 & 输出热功率 & 单位面积输出 \\
+        & & & & (MW) & (kW/m$^{2}$) \\
+        \midrule
+        0.5777 & 0.7565 & 0.9278 & 0.9399 & 35.32 & 0.5622 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{longtable}{cccccc}
+    \caption{问题一每月 21 日平均光学效率及输出功率} \label{tab:Q1_monthly} \\
+    \toprule
+    日期 & 光学效率 & 余弦效率 & 阴影遮挡效率 & 截断效率 & 单位面积输出热功率 \\
+    & & & & & (kW/m$^{2}$) \\
+    \midrule
+    \endfirsthead
+    \multicolumn{6}{l}{\small 续表 \thetable} \\
+    \toprule
+    日期 & 光学效率 & 余弦效率 & 阴影遮挡效率 & 截断效率 & 单位面积输出热功率 \\
+    & & & & & (kW/m$^{2}$) \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{6}{r}{\small 接下页} \\
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 月 21 日 & 0.5380 & 0.7199 & 0.9124 & 0.9452 & 0.4690 \\
+    2 月 21 日 & 0.5651 & 0.7404 & 0.9311 & 0.9391 & 0.5328 \\
+    3 月 21 日 & 0.5843 & 0.7611 & 0.9347 & 0.9370 & 0.5813 \\
+    4 月 21 日 & 0.6013 & 0.7793 & 0.9357 & 0.9370 & 0.6189 \\
+    5 月 21 日 & 0.6120 & 0.7893 & 0.9368 & 0.9382 & 0.6395 \\
+    6 月 21 日 & 0.6153 & 0.7924 & 0.9368 & 0.9389 & 0.6457 \\
+    7 月 21 日 & 0.6119 & 0.7892 & 0.9368 & 0.9382 & 0.6393 \\
+    8 月 21 日 & 0.6007 & 0.7786 & 0.9357 & 0.9369 & 0.6175 \\
+    9 月 21 日 & 0.5834 & 0.7601 & 0.9347 & 0.9370 & 0.5791 \\
+    10 月 21 日 & 0.5623 & 0.7378 & 0.9296 & 0.9398 & 0.5259 \\
+    11 月 21 日 & 0.5354 & 0.7182 & 0.9105 & 0.9454 & 0.4629 \\
+    12 月 21 日 & 0.5220 & 0.7111 & 0.8987 & 0.9466 & 0.4344 \\
+\end{longtable}
+
+结果表明：年平均光学效率为 \res{0.5777}，年平均输出热功率为 \res{35.32 MW}，单位镜面面积年平均输出热功率为 \res{0.5622 kW/m$^{2}$}。
+
+各月变化趋势如图~\ref{fig:monthly_metrics} 所示。余弦效率由太阳方向与镜面—集热器目标方向的夹角共同决定，在本镜场近似环形布局及给定代表时刻下，太阳高度角升高通常减小入射方向与目标反射方向的夹角，因此场平均余弦效率总体呈夏高冬低的季节规律；阴影遮挡效率在冬季下降更明显，低太阳角时镜间遮挡加重；截断效率全年维持在 $0.937$--$0.947$ 之间、波动幅度较小，说明在本模型的光斑能量均匀分布假设下，截断性能对季节变化的敏感度不高。
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/fig2_gantt.png}
-    \caption{【替换】最优生产计划甘特图}
-    \label{fig:gantt}
-    \begin{center}
-        \footnotesize 【替换】本图是问题一模型求得的最优排程可视化结果。横轴为【替换】，纵轴为【替换】，色块表示该日安排生产。
-    \end{center}
+    \includegraphics[width=0.95\textwidth]{figures/fig1_monthly_metrics.png}
+    \caption{问题一月平均光学效率及输出功率变化趋势}
+    \label{fig:monthly_metrics}
+\end{figure}
+
+定日镜场布局如图~\ref{fig:mirror_layout} 所示，$1745$ 面定日镜分布在半径 $100$--$350\;\mathrm{m}$ 的环形区域内，吸收塔位于中心。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/fig0_mirror_layout.png}
+    \caption{定日镜场布局}
+    \label{fig:mirror_layout}
 \end{figure}
 
 \subsection{问题二：引入【替换新约束】的模型}
@@ -367,60 +677,105 @@
 
 求得最优\res{【替换结果描述】}为\res{【替换具体数字】}，总【替换指标】为\res{【替换具体数字】}。
 
-\subsection{问题四：【替换随机性】的处理}
-
-\subsubsection{需求分布拟合}
-
-基于【替换历史数据】，利用【替换预测模型，如 ARIMA】拟合需求的均值 $\mu=$\res{【替换值】}和标准差 $\sigma=$\res{【替换值】}。
-
-\subsubsection{蒙特卡洛模拟验证}
-
-通过\res{【替换 N】}次蒙特卡洛模拟验证，当【替换决策变量】取\res{【替换值】}时，\res{【替换指标 1】}满足【替换约束 1】，\res{【替换指标 2】}满足【替换约束 2】。
-
 % ============================ 六、模型检验与敏感性分析 =======================
 \section{模型检验与敏感性分析}
 
-\subsection{灵敏度分析}
+\subsection{几何正确性检验}
 
-为了进一步验证模型在参数扰动下的稳定性，我们对核心参数【替换 X】进行了灵敏度分析。结果如表\ref{tab:sensitivity}所示。
+\textbf{（1）镜心主光线对准集热器中心}
+
+由反射定律，镜心处沿主光线方向 $\mathbf{s}$ 的反射方向 $\mathbf{r}_i = 2(\mathbf{s}\cdot\mathbf{n}_i)\mathbf{n}_i - \mathbf{s}$ 应精确指向集热器中心。逐镜计算反射方向与目标方向 $\mathbf{t}_i$ 的夹角余弦，全场 $1745$ 面镜的最大偏差为 $6.66\times10^{-16}$，与机器精度同量级，验证了姿态计算与反射定律的一致性。
+
+\textbf{（2）零锥角确定性检验}
+
+将太阳光锥半角置零后，镜心发出的主光线是否命中集热器可退化为确定性几何问题：射线上行经集热器中心，必与集热器圆柱侧面相交，且交点高度落在 $[76, 84]\;\mathrm{m}$ 区间内。对全部 $1745$ 面镜的确定性求交结果显示命中率为 $100\%$，与理论预期一致，说明圆柱求交实现正确。
+
+\textbf{（3）加密采样对照}
+
+抽取 $30$ 面镜，将镜面网格由 $10\times10$ 加密至 $20\times20$、光线数由 $1024$ 增至 $2048$，截断效率最大变化 $0.0024$、平均变化 $0.0016$，几何求交结果稳定。
+
+\subsection{数值收敛性检验}
+
+离散化参数的收敛性已在问题一的数值实现小节（表~\ref{tab:convergence}）中给出：在全部 $60$ 个代表时刻上，网格数由 $8\times8$ 增至 $15\times15$ 时年均光学效率变化不超过 $0.22\%$，光线数与邻域半径的变化几乎不影响结果。当前参数取值处于收敛平台区。
+
+\subsection{邻域截断半径检验}
+
+$20\;\mathrm{m}$ 筛选半径是否漏掉远距离遮挡关系，需要通过与无邻域限制的全镜场求交基准对比来验证。冬季 $9{:}00$、$15{:}00$ 为太阳高度角最低、阴影延伸最长的最不利时刻，取这两个时刻进行对比，结果如表~\ref{tab:neighbor_check} 所示。
 
 \begin{table}[H]
     \centering
-    \renewcommand{\arraystretch}{1.3}
-    \caption{核心参数【替换 X】的灵敏度分析结果}
-    \label{tab:sensitivity}
-    \begin{tabular}{cccc}
+    \small
+    \caption{最不利时刻（12 月 21 日）不同筛选半径与全镜场基准的对比}
+    \label{tab:neighbor_check}
+    \begin{tabular}{lcccc}
         \toprule
-        参数变化 & 目标函数值 & 变化幅度 & 结论 \\
+        筛选半径 (m) & 平均候选镜数 & 阴影遮挡效率 & 综合光学效率 & 输出热功率 (MW) \\
         \midrule
-        $-20\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
-        $-10\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
-        $0$     & \res{【替换值】} & — & 基准 \\
-        $+10\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
-        $+20\%$ & \res{【替换值】} & 【替换】\% & 稳定 \\
+        20 & 5.9 & 0.8571 & 0.4820 & 22.37 \\
+        30 & 13.5 & 0.8560 & 0.4815 & 22.34 \\
+        40 & 22.3 & 0.8560 & 0.4815 & 22.34 \\
+        50 & 36.4 & 0.8560 & 0.4815 & 22.34 \\
+        全镜场基准 & 1744 & 0.8560 & 0.4815 & 22.34 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-结果显示，当【替换 X】变化 $\pm 20\%$ 时，目标函数仅变化【替换百分比】，说明模型具有\res{【替换极强/较好】}的稳定性。
+$20\;\mathrm{m}$ 半径下综合光学效率与全镜场基准相差约 $0.1\%$，$30\;\mathrm{m}$ 以上与基准完全一致。在全部 $60$ 个代表时刻下，$20\;\mathrm{m}$ 与 $40\;\mathrm{m}$ 的年均光学效率相差仅 $0.004\%$。因此 $20\;\mathrm{m}$ 筛选半径在最不利工况下误差不超过 $0.1\%$，采用 $30\;\mathrm{m}$ 可完全消除邻域截断误差；本文以计算效率优先取 $R_c = 20\;\mathrm{m}$，误差可忽略。
 
-\subsection{误差分析}
+\subsection{塔身半径假设的敏感性分析}
 
-对于【替换预测/拟合】类模型，计算得到拟合优度 $R^2=$\res{【替换值】}，残差平方和 SSE=\res{【替换值】}，均方根误差 RMSE=\res{【替换值】}。
+题目未给出吸收塔塔身直径，本文按保守等径假设取塔身半径与集热器相同（$R_t = 3.5\;\mathrm{m}$）。由于塔影只影响镜面到塔之间连线方向上的少量采样点，塔身半径对结果的影响可通过敏感性分析量化，结果如表~\ref{tab:tower_sens} 所示。
 
-\subsection{稳定性评价}
-
-算法收敛曲线如图\ref{fig:convergence}所示，可见算法在【替换代数】代后收敛，结果可复现。
-
-\begin{figure}[H]
+\begin{table}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig3_convergence.png}
-    \caption{算法收敛曲线}
-    \label{fig:convergence}
-    \begin{center}
-        \footnotesize 【替换】本图展示了算法的收敛过程，横轴为迭代代数，纵轴为目标函数值。
-    \end{center}
-\end{figure}
+    \small
+    \caption{塔身半径敏感性（塔影采样点占全部采样点的比例）}
+    \label{tab:tower_sens}
+    \begin{tabular}{lccccc}
+        \toprule
+        塔身半径 (m) & 2.0 & 2.5 & 3.0 & 3.5 & 4.0 \\
+        \midrule
+        12 月 21 日 9:00 & 0.29\% & 0.35\% & 0.43\% & 0.49\% & 0.56\% \\
+        12 月 21 日 15:00 & 0.24\% & 0.30\% & 0.36\% & 0.41\% & 0.48\% \\
+        6 月 21 日 12:00 & 0.00\% & 0.00\% & 0.00\% & 0.00\% & 0.00\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+塔影对镜面采样的影响在冬季低太阳角时刻最大，也仅占 $0.5\%$ 左右；塔身半径由 $2.0\;\mathrm{m}$ 变化到 $4.0\;\mathrm{m}$ 时，塔影占比变化不超过 $0.3$ 个百分点，对年均光学效率的影响可忽略。正午时刻塔影占比为零（太阳高度角高，塔影不触及任何镜面）。该敏感性分析说明，即使塔身半径估计存在偏差，对最终结果的影响也十分有限。
+
+\subsection{能量自检与对称性检验}
+
+\textbf{（1）能量关系自检}
+
+年平均输出热功率与单位面积年平均输出热功率满足
+\[
+q = \frac{P}{A_{\mathrm{total}}} = \frac{35.32 \times 10^{3}\;\mathrm{kW}}{1745 \times 36\;\mathrm{m}^{2}} = 0.5622\;\mathrm{kW/m^{2}},
+\]
+与表~\ref{tab:Q1_annual} 中年平均输出热功率 $35.32\;\mathrm{MW}$、单位面积功率 $0.5622\;\mathrm{kW/m^{2}}$ 完全一致，说明面积汇总与功率换算关系无误。
+
+\textbf{（2）对称性检验}
+
+镜场布局近似中心对称，同一月份 $9{:}00$ 与 $15{:}00$（太阳时角互为相反数）的输出热功率应接近。取 3、6、9、12 月对比，结果如表~\ref{tab:symmetry} 所示。
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{同月 9:00 与 15:00 输出热功率对称性检验}
+    \label{tab:symmetry}
+    \begin{tabular}{lccc}
+        \toprule
+        月份 & 9:00 功率 (MW) & 15:00 功率 (MW) & 相对差 (\%) \\
+        \midrule
+        3 月 & 33.99 & 34.10 & 0.34 \\
+        6 月 & 38.44 & 38.59 & 0.37 \\
+        9 月 & 33.82 & 33.94 & 0.34 \\
+        12 月 & 22.37 & 22.56 & 0.87 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+各月 $9{:}00$ 与 $15{:}00$ 的输出热功率相对差不超过 $0.9\%$，对称性良好；12 月相对差略大，与冬季低太阳高度角下镜间遮挡随方位变化加剧的物理规律相符。
 
 % ============================ 七、模型评价与推广 =============================
 \section{模型评价与推广}
@@ -468,10 +823,10 @@
 \section{参考文献}
 \begin{thebibliography}{99}
     \bibitem{1} 姜启源, 谢金星, 叶俊. 数学模型(第五版)[M]. 北京: 高等教育出版社, 2018.
-    \bibitem{2} 全国大学生数学建模竞赛组委会. 【替换年份】年【替换赛题名】[Z]. 【替换年份】.
-    \bibitem{3} Holland J H. Adaptation in Natural and Artificial Systems[M]. MIT Press, 1992.
-    \bibitem{4} Box G E P, Jenkins G M. Time Series Analysis: Forecasting and Control[M]. Holden-Day, 1976.
-    \bibitem{5} 【替换】作者. 论文名[J]. 期刊名, 年份, 卷号(期号): 页码.
+    \bibitem{2} 张平, 等. 太阳能塔式光热镜场光学效率计算方法[J]. 技术与市场, 2021, 28(6): 5-8.
+    \bibitem{3} 杜宇航, 等. 塔式光热电站定日镜不同聚焦策略的影响分析[J]. 动力工程学报, 2020, 40(5): 426-432.
+    \bibitem{4} Farges O, Bezian J J, El Hafi M. Global optimization of solar power tower systems using a Monte Carlo algorithm: Application to a redesign of the PS10 solar thermal power plant[J]. Renewable Energy, 2018, 119: 345-353.
+    \bibitem{5} 蔡志杰. 太阳影子定位[J]. 数学建模及其应用, 2015, 4(4): 25-33.
 \end{thebibliography}
 
 % ============================ 附录 ===========================================

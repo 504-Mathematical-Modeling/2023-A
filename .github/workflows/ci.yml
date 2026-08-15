@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python:
+    name: Python 冒烟测试 + Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 安装依赖
+        run: |
+          pip install --upgrade pip
+          pip install numpy pandas openpyxl scipy ruff pytest
+      - name: Lint (ruff)
+        run: ruff check 01_代码
+      - name: 冒烟测试 (pytest)
+        run: python -m pytest tests/ -v --durations=5
+
+  latex:
+    name: 论文编译 (xelatex)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装 TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-xetex \
+            texlive-lang-chinese \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            texlive-latex-extra \
+            texlive-pictures \
+            texlive-plain-generic \
+            latexmk
+      - name: 编译论文
+        working-directory: 02_论文
+        run: |
+          latexmk -xelatex -interaction=nonstopmode -halt-on-error 论文.tex
+      - name: 确认 PDF 生成
+        run: test -f 02_论文/论文.pdf && echo "PDF OK"
