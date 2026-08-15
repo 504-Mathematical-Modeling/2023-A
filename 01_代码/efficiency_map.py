@@ -24,7 +24,6 @@ npz 输出字段：
 """
 
 import numpy as np
-
 from q1_functions import (
     COLLECTOR_CENTER,
     COLLECTOR_RADIUS,

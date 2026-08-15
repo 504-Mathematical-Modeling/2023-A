@@ -11,17 +11,15 @@ import os
 import time
 
 import numpy as np
-
 from efficiency_map import (
     EfficiencyMap,
+    _attitude_cos_batch,
     build_efficiency_map,
     trunc_free_batch,
-    _attitude_cos_batch,
 )
 from q1_functions import (
     REP_HOURS,
     TRUNC_RAYS_DEFAULT,
-    atmospheric_transmittance,
     dni,
     load_mirrors,
     precompute_position_terms,

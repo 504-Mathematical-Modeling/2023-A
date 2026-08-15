@@ -33,12 +33,24 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from q1_functions import (  # noqa: E402
-    COLLECTOR_CENTER, COLLECTOR_RADIUS, COLLECTOR_Z_HIGH, COLLECTOR_Z_LOW,
-    MIRROR_AREA, REP_HOURS, SAMPLING_EPS, build_neighbors,
-    collector_trunc_efficiency, dni, effective_points, field_power_mw,
-    load_mirrors, mirror_attitude, mirror_optical_efficiency,
-    precompute_position_terms, sun_geometry, tower_shadow_mask,
+from q1_functions import (
+    COLLECTOR_RADIUS,
+    COLLECTOR_Z_HIGH,
+    COLLECTOR_Z_LOW,
+    MIRROR_AREA,
+    REP_HOURS,
+    SAMPLING_EPS,
+    build_neighbors,
+    collector_trunc_efficiency,
+    dni,
+    effective_points,
+    field_power_mw,
+    load_mirrors,
+    mirror_attitude,
+    mirror_optical_efficiency,
+    precompute_position_terms,
+    sun_geometry,
+    tower_shadow_mask,
 )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

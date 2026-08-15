@@ -11,7 +11,6 @@ import os
 
 import numpy as np
 import pandas as pd
-
 from q1_functions import (
     MIRROR_AREA,
     REP_HOURS,
