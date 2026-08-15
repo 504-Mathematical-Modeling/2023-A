@@ -390,14 +390,16 @@ def mirror_attitude(mirror_center, s, position_terms=None):
 
 # ============ 阴影遮挡效率 ============
 GRID_N_DEFAULT = 10          # 镜面采样网格数（每边），总采样点 GRID_N²
-NEIGHBOR_RADIUS = 40.0       # 候选遮挡镜面筛选半径（m）
+NEIGHBOR_RADIUS = 20.0       # 候选遮挡镜面筛选半径（m），= ⌈W√2 + d_max_NN⌉，见推导日志
 SAMPLING_EPS = 1e-8          # 射线交点最小参数 λ（m），排除数值噪声与自身交点
 
 def build_neighbors(mirror_center, radius=NEIGHBOR_RADIUS):
     """按镜心水平距离预计算每面镜的候选遮挡镜索引（不含自身）。
 
     阴影/挡光只可能由空间近邻镜面造成（低太阳角 14.4° 时阴影水平
-    延伸约 12 m，见收敛测试），距离阈值筛选可避免 O(N²) 全遍历。
+    延伸约 12 m，见收敛测试），距离阈值筛选可大幅减少耗时较高的
+    射线-矩形求交次数（距离矩阵构造本身仍为 O(N²)，但仅需一次
+    预计算）。
     """
     d2 = np.sum((mirror_center[:, None, :2] - mirror_center[None, :, :2]) ** 2,
                 axis=-1)
@@ -496,7 +498,8 @@ def _ray_rect_hit_batch(points, d, C, n, u, v, half=MIRROR_SIZE / 2):
     return hit.any(axis=1)
 
 
-def effective_points(mirror_center, s, n, neighbors, grid_n=GRID_N_DEFAULT):
+def effective_points(mirror_center, s, n, neighbors, grid_n=GRID_N_DEFAULT,
+                     tower_radius=TOWER_RADIUS):
     """生成镜面采样点并计算未被阴影遮挡的有效掩码（张平论文三部分）。
 
     按优先级判定，避免重复扣除：
@@ -515,6 +518,11 @@ def effective_points(mirror_center, s, n, neighbors, grid_n=GRID_N_DEFAULT):
         镜面法向单位向量。
     neighbors : list of ndarray
         build_neighbors 的预计算结果。
+    grid_n : int
+        镜面每边采样点数。
+    tower_radius : float
+        塔身圆柱半径（m），默认取全局常量 TOWER_RADIUS；
+        供塔径敏感性分析传入不同取值。
 
     返回
     ----
@@ -525,7 +533,8 @@ def effective_points(mirror_center, s, n, neighbors, grid_n=GRID_N_DEFAULT):
     """
     P = sample_mirror_points(mirror_center, n, grid_n)   # (N, S, 3)
     S = P.shape[1]
-    tower_hit = tower_shadow_mask(P.reshape(-1, 3), s).reshape(-1, S)
+    tower_hit = tower_shadow_mask(P.reshape(-1, 3), s,
+                                  radius=tower_radius).reshape(-1, S)
 
     r = 2.0 * np.sum(s * n, axis=1)[:, None] * n - s     # 反射方向 (N, 3)
     u, v = mirror_basis(n)
