@@ -18,7 +18,7 @@ jobs:
       - name: 安装依赖
         run: |
           pip install --upgrade pip
-          pip install numpy pandas openpyxl ruff pytest
+          pip install numpy pandas openpyxl scipy ruff pytest
       - name: Lint (ruff)
         run: ruff check 01_代码
       - name: 冒烟测试 (pytest)
@@ -36,6 +36,7 @@ jobs:
             texlive-xetex \
             texlive-lang-chinese \
             texlive-fonts-recommended \
+            texlive-fonts-extra \
             texlive-latex-extra \
             latexmk
       - name: 编译论文
