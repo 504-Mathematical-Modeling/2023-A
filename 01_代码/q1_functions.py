@@ -103,8 +103,8 @@ def _set_cjk_font():
     from matplotlib import font_manager
 
     candidates = [
-        "Noto Sans CJK SC", "Noto Serif CJK SC", "AR PL UMing CN",
-        "SimHei", "Microsoft YaHei", "WenQuanYi Zen Hei",
+        "Noto Sans CJK SC", "Noto Sans CJK JP", "Noto Serif CJK SC",
+        "AR PL UMing CN", "SimHei", "Microsoft YaHei", "WenQuanYi Zen Hei",
     ]
     available = {f.name for f in font_manager.fontManager.ttflist}
     for name in candidates:
