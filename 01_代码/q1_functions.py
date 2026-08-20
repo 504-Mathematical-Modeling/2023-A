@@ -103,8 +103,8 @@ def _set_cjk_font():
     from matplotlib import font_manager
 
     candidates = [
-        "Noto Sans CJK SC", "Noto Serif CJK SC", "AR PL UMing CN",
-        "SimHei", "Microsoft YaHei", "WenQuanYi Zen Hei",
+        "Noto Sans CJK SC", "Noto Sans CJK JP", "Noto Serif CJK SC",
+        "AR PL UMing CN", "SimHei", "Microsoft YaHei", "WenQuanYi Zen Hei",
     ]
     available = {f.name for f in font_manager.fontManager.ttflist}
     for name in candidates:
@@ -146,61 +146,56 @@ def plot_mirror_layout(mirror_xy, save_path=None):
 
 
 def plot_monthly_metrics(df1, save_path=None):
-    """绘制月平均光学效率（含分项）、输出功率与单位面积功率随月份变化。
+    """绘制月平均光学效率（含分项）与输出热功率随月份变化。
 
-    参数
-    ----
-    df1 : DataFrame
-        表 1 数据（含 eta, eta_cos, eta_sb, eta_trunc, p_mw, q 列）。
-    save_path : str | None
-        非空时保存到该路径。
+    上子图：总光学效率（黑实线）与余弦/阴影遮挡/截断三分量（灰阶虚线）；
+    下子图：月平均输出热功率柱状图。两图共享月份横轴，避免 2×2 拼图
+    与图内说明框造成的冗余构图。
     """
     import matplotlib.pyplot as plt
 
     _set_cjk_font()
     months = np.arange(1, 13)
-    fig, axes = plt.subplots(2, 2, figsize=(12, 9))
+    fig, (ax_top, ax_bot) = plt.subplots(
+        2, 1, figsize=(8.5, 6.2), sharex=True,
+        gridspec_kw={"height_ratios": [1.15, 1.0]})
+    plt.subplots_adjust(hspace=0.14)
 
-    ax = axes[0, 0]
-    ax.plot(months, df1["eta"], "o-", label="光学效率")
-    ax.plot(months, df1["eta_cos"], "s--", label="余弦效率")
-    ax.plot(months, df1["eta_sb"], "^--", label="阴影遮挡效率")
-    ax.plot(months, df1["eta_trunc"], "v--", label="截断效率")
-    ax.set_xticks(months)
-    ax.set_xlabel("月份")
-    ax.set_ylabel("效率")
-    ax.set_title("月平均光学效率及分项效率")
-    ax.legend()
-    ax.grid(alpha=0.3)
+    for ax in (ax_top, ax_bot):
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(axis="y", alpha=0.25, linestyle="--", linewidth=0.7)
+        ax.set_axisbelow(True)
 
-    ax = axes[0, 1]
-    ax.plot(months, df1["p_mw"], "o-", color="tab:red")
-    ax.set_xticks(months)
-    ax.set_xlabel("月份")
-    ax.set_ylabel("输出热功率 / MW")
-    ax.set_title("月平均输出热功率")
-    ax.grid(alpha=0.3)
+    # 上：月平均光学效率及分项
+    ax_top.plot(months, df1["eta"], color="#111111", lw=2.0,
+                marker="o", ms=5, mfc="white", mec="#111111",
+                label="总光学效率")
+    ax_top.plot(months, df1["eta_cos"], color="#333333", lw=1.2,
+                linestyle="-.", label="余弦效率")
+    ax_top.plot(months, df1["eta_sb"], color="#666666", lw=1.2,
+                linestyle="--", label="阴影遮挡效率")
+    ax_top.plot(months, df1["eta_trunc"], color="#999999", lw=1.2,
+                linestyle=":", label="截断效率")
+    ax_top.set_ylabel("月平均光学效率")
+    ax_top.set_ylim(0.40, 1.00)
+    ax_top.legend(loc="lower center", bbox_to_anchor=(0.5, 1.03),
+                  ncol=4, frameon=False, fontsize=9)
 
-    ax = axes[1, 0]
-    ax.plot(months, df1["q"], "o-", color="tab:green")
-    ax.set_xticks(months)
-    ax.set_xlabel("月份")
-    ax.set_ylabel("单位面积功率 / (kW/m2)")
-    ax.set_title("月平均单位面积输出热功率")
-    ax.grid(alpha=0.3)
+    # 下：月平均输出热功率柱状图
+    ax_bot.bar(months, df1["p_mw"], width=0.62,
+               color="#A6C4E8", edgecolor="#2F5597", linewidth=0.8)
+    ax_bot.set_ylabel("月平均输出热功率 / MW")
+    ax_bot.set_ylim(0, df1["p_mw"].max() * 1.22)
+    ax_bot.set_xticks(months)
+    ax_bot.set_xlabel("月份")
+    for m, v in zip(months, df1["p_mw"]):
+        ax_bot.text(m, v + 0.03, f"{v:.2f}", ha="center", va="bottom",
+                    fontsize=7.5, color="#333333")
 
-    ax = axes[1, 1]
-    ax.axis("off")
-    ax.text(0.05, 0.5,
-            "月平均口径：每月 21 日 9:00、10:30、12:00、13:30、15:00\n"
-            "五个代表时刻等权平均（题目附录规定）",
-            fontsize=11, va="center")
-    ax.set_title("计算说明")
-
-    fig.tight_layout()
     if save_path:
-        fig.savefig(save_path, dpi=150, bbox_inches="tight")
-    return fig, axes
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+    return fig, (ax_top, ax_bot)
 
 
 # ============ 太阳位置（每月 21 日） ============
